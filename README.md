@@ -11,18 +11,21 @@ Vista en 3D del mismo:
 
 Utilizando los siguientes pines en Arduino UNO:
 
-Pin  -  Componente  -  Descripción
-D2   -  Transistor  -  Detector Cruce por cero
-D3   -  Triac       -  Resistencia Calefactora
-D4   -  Encoder     -  Pulsador Encoder
-D6   -  Encoder     -  Pin B de encoder con pulsador
-D7   -  Encoder     -  Pin A de encoder con pulsador
-D9   -  DHT11       -  Sensor Humedad
-D10  -  J9          -  Motor 220V
-D11  -  J7          -  Ventilador
+|Pin  |  Componente  |  Descripción                    |
+------|--------------|---------------------------------|
+|D2   |  Transistor  |  Detector Cruce por cero        |
+|D3   |  Triac       |  Resistencia Calefactora        |
+|D4   |  Encoder     |  Pulsador Encoder               |
+|D6   |  Encoder     |  Pin B de encoder con pulsador  |
+|D7   |  Encoder     |  Pin A de encoder con pulsador  |
+|D9   |  DHT11       |  Sensor Humedad                 |
+|D10  |  J9          |  Motor 220V                     |
+|D11  |  J7          |  Ventilador                     |
 
 //////////////////////////////////////////////////
 
-A0   -  LM35        -  Sensor Temperatura
-A4   -  LCD+I2C     -  Pin SDA de LCD con módulo I2C
-A5   -  LCD+I2C     -  Pin SCL de LCD con módulo I2C
+|A0|LM35|Sensor Temperatura|
+|A4|LCD+I2C|Pin SDA de LCD con módulo I2C|
+|A5|LCD+I2C|Pin SCL de LCD con módulo I2C|
+
+
