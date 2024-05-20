@@ -246,7 +246,7 @@ void computePID() {
   double delta_potencia = potencia_deseada - potencia_foco;
 
   // Restricción en el incremento de potencia para frenar antes de alcanzar el setpoint
-  double max_incremento = 5.0; // Ajusta este valor según tu necesidad
+  double max_incremento = 5.0;
   if (fabs(delta_potencia) > max_incremento) {
     if (delta_potencia > 0) {
       delta_potencia = max_incremento;
@@ -285,7 +285,7 @@ void setup() {
 
   lcd.init();
   lcd.backlight();
-  lcd.createChar(0, icono_flecha);              //Caracter personalizado       
+  lcd.createChar(0, icono_flecha);              //Flecha    
 
   fn_menu(contador,menu_1,size_menu_1);      //Iniciamos presentando el menu principal
 
