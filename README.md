@@ -22,9 +22,10 @@ Utilizando los siguientes pines en Arduino UNO:
 |D10  |  J9          |  Motor 220V                     |
 |D11  |  J7          |  Ventilador                     |
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 
 |A0|LM35|Sensor Temperatura|
+|--|----|---------------|
 |A4|LCD+I2C|Pin SDA de LCD con módulo I2C|
 |A5|LCD+I2C|Pin SCL de LCD con módulo I2C|
 
