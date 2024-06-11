@@ -13,7 +13,7 @@ DHT sensor_humedad(DHTPIN, DHTTYPE);
 ///////////////Variables de control potencia focos///////////////
 volatile int i = 0;
 volatile boolean cruce_x_cero = false;
-int Triac = 3;
+const int Triac = 3;
 int potencia_foco = 0;
 int T_int = 100;
 /////////////////////////////////////////////////////////////////
@@ -55,20 +55,25 @@ double prevError = 0.0;
 
 ///////////////Variables para controlar el tiempo de ejecucion///////////////
 unsigned long tiempoUltimo = 0;
-const unsigned long intervaloTiempo = 5000; // Intervalo de actualización en milisegundos
+const unsigned long intervaloTiempo = 2500; // Intervalo de actualización en milisegundos
 unsigned long tiempoDeCorreccion = 0;
 const unsigned long intervaloCorreccion = 1000; // Intervalo de corrección en milisegundos
 unsigned long tiempoTranscurrido;
 unsigned long tiempoDia = 86400000; // Milisegundos en un día (1000 ms/s * 60 s/min * 60 min/h * 24 h/día)
 unsigned long tiempoUltimaRotacion = 0;
+unsigned long tiempoInicio = 0;
 
 /////////////////////////////////////////////////////////////////////////////
-
+//Auxiliares Motor
 int contadorMenu = 0;
-
 int incubando = 0;
-int ventilador_humedad = 11;
-int motor_rotacion = 10;
+bool motorEncendido;
+int duracionEncendido = 2500;
+
+
+//Pines arduino
+const ventilador_humedad = 11;
+const motor_rotacion = 10;
 
 //////////////////////////////MENU//////////////////////////////
 
@@ -215,23 +220,35 @@ void controlHumedad(float humedad){
 }
 
 
-void controlRotacion(){
+void controlRotacion() {
   unsigned long tiempoActualRotacion = millis();
-  if(tiempoDia * dias_set < tiempoActualRotacion){
+  
+  // Verificamos si alcanzamos el tiempo total de días
+  if(tiempoDia * dias_set > tiempoActualRotacion - tiempoInicio){
     unsigned long intervaloRotacion = tiempoDia / frecuencia_rotacion;
 
-    if (tiempoActualRotacion - tiempoUltimaRotacion >= intervaloRotacion) {
-      // Encender el motor
+    // Verificamos si pasó el intervalo de rotación
+    if (!motorEncendido && (tiempoActualRotacion - tiempoUltimaRotacion >= intervaloRotacion)) {
+      // Encendemos el motor
       digitalWrite(motor_rotacion, HIGH);
-      // Actualizar el tiempo de la última rotación
+      motorEncendido = true;
+      // Actualizamos el tiempo de la última rotación
       tiempoUltimaRotacion = tiempoActualRotacion;
-    }else{
-      digitalWrite(motor_rotacion, LOW);   
+    } else if (motorEncendido && (tiempoActualRotacion - tiempoUltimaRotacion >= duracionEncendido)) {
+      // Apagar el motor después de 2.5 seg
+      digitalWrite(motor_rotacion, LOW);
+      motorEncendido = false;
+      // Actualizamos el tiempo de la última rotación para el siguiente ciclo
+      tiempoUltimaRotacion = tiempoActualRotacion;
     }
-  }else{
+  } else {
+    // Apagar el motor después de que se hayan alcanzado los días establecidos
     digitalWrite(motor_rotacion, LOW);
+    motorEncendido = false;
   }
 }
+
+
 
 void computePID() {
   Temperatura_medida = (5.0 * 100.0 * analogRead(A0) / 1024.0); //Lectura LM35
@@ -246,7 +263,7 @@ void computePID() {
   double delta_potencia = potencia_deseada - potencia_foco;
 
   // Restricción en el incremento de potencia para frenar antes de alcanzar el setpoint
-  double max_incremento = 5.0;
+  double max_incremento = 5.0; // Ajusta este valor según tu necesidad
   if (fabs(delta_potencia) > max_incremento) {
     if (delta_potencia > 0) {
       delta_potencia = max_incremento;
@@ -261,7 +278,6 @@ void computePID() {
 
   Temperatura_medida_anterior = Temperatura_medida;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -285,7 +301,7 @@ void setup() {
 
   lcd.init();
   lcd.backlight();
-  lcd.createChar(0, icono_flecha);              //Flecha    
+  lcd.createChar(0, icono_flecha);              //Caracter personalizado       
 
   fn_menu(contador,menu_1,size_menu_1);      //Iniciamos presentando el menu principal
 
@@ -328,8 +344,8 @@ void loop() {
           break;
         case 3: //CUSTOM
           temperatura_set = 37.7;
-          humedad_set = 65;
-          frecuencia_rotacion = 7;
+          humedad_set = 20;
+          frecuencia_rotacion = 8640;
           dias_set = 21;
           break;
       }
@@ -410,7 +426,7 @@ void loop() {
 
           incubando = 1;
           while(1){
-              unsigned long tiempoInicio = millis();
+              tiempoInicio = millis();
               unsigned long tiempoActual = millis();
               // Actualizar la pantalla cada 5 segundos
               if (tiempoActual - tiempoUltimo >= intervaloTiempo) {
